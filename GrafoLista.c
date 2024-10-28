@@ -151,6 +151,41 @@ void imprimirRecomendacoes(pGrafo g, int u){
 }
 
 //Busca em Profundidade
+//Criar caminho entre todos os pontos
+void buscaEmProfundidade(pGrafo g, int *pai, int p, int v){
+    pNo t;
+    pai[v] = p;
+    for(t = g->adjacencia[v]; t != NULL; t = t->prox){
+        if(pai[t->v] == -1){
+            buscaEmProfundidade(g, pai, v, t->v);
+        }
+    }
+}
+
+int* encontrarCaminhos(pGrafo g, int s){
+    int i, *pai = (int*) malloc(g->n * sizeof(int));
+    for(i = 0; i < g->n; i++){
+        pai[i] = -1;
+    }
+    buscaEmProfundidade(g, pai, s, s);
+    return pai;
+}
+
+void imprimirCaminhoReverso(int v, int *pai){
+    printf("%d\t", v);
+    if(pai[v] != v){
+        imprimirCaminhoReverso(pai[v], pai);
+    }
+}
+
+void imprimirCaminho(int v, int *pai){
+    if(pai[v] != v){
+        imprimirCaminho(pai[v], pai);
+    }
+    printf("%d\t", v);
+}
+
+//Buscar pra ver se existe caminho entre um ponto e outro
 int buscaRec(pGrafo g, int *visitado, int v, int t){
     int w;
     if(v == t){
@@ -177,5 +212,106 @@ int existeCaminho(pGrafo g, int s, int t){
     return encontrou;
 }
 
+//End Busca em Profundidade
+
+void visitarRec(pGrafo g, int *componentes, int comp, int v){
+    pNo t;
+    componentes[v] = comp;
+    for(t = g->adjacencia[v]; t != NULL; t = t->prox){
+        if(componentes[t->v] == -1){
+            visitarRec(g, componentes, comp, t->v);
+        }
+    }
+}
+
+int* encontrarComponentes(pGrafo g){
+    int s, c = 0, *componentes = (int*) malloc(g->n * sizeof(int));
+    for(s = 0; s < g->n; s++){
+        componentes[s] = -1;
+    }
+    for(s = 0; s < g->n; s++){
+        if(componentes[s] == -1){
+            visitarRec(g, componentes, c, s);
+            c++;
+        }
+    }
+    return componentes;
+}
+
+//Busca em Largura
+FILA* criarFila(){
+    FILA* f = (FILA*) malloc(sizeof(FILA));
+    f->inicio = NULL;
+    f->fim = NULL;
+    return f;
+}
+
+void destruirFila(FILA* fila){
+    free(fila);
+}
+
+void enfileirar(FILA* fila, int s){
+    NOFILA* novoNo = (NOFILA*) malloc(sizeof(NOFILA));
+    novoNo->valor = s;
+    novoNo->prox = NULL;
+
+    if(fila == NULL){
+        fila = criarFila();
+        fila->inicio = novoNo;
+        fila->fim = novoNo;
+    }
+    else{
+        fila->fim->prox = novoNo;
+    }
+}
+
+int desenfileirar(FILA* fila){
+    if(fila == NULL){
+        return NULL;
+    }
+    else{
+        NOFILA* aux = fila->inicio;
+        fila->inicio = fila->inicio->prox;
+        return aux->valor;
+        free(aux);
+    }
+}
+
+int filaVazia(FILA* fila){
+    if(fila->inicio == NULL){
+        return 1;
+    }
+    return 0;
+}
+
+int* buscaEmLargura(pGrafo g, int s){
+    int w, v;
+    int *pai = (int*) malloc(g->n * sizeof(int));
+    int *visitado = (int*) malloc(g->n * sizeof(int));
+    pNo t;
+    pFila f = criarFila();
+    for(v = 0; v < g->n; v++){
+        pai[v] = -1;
+        visitado[v] = 0;
+    }
+    enfileirar(f, s);
+    pai[s] = s;
+    visitado[s] = 1;
+    while(!filaVazia(f)){
+        v = desenfileirar(f);
+        for(t = g->adjacencia[v]; t != NULL; t = t->prox){
+            w = t->v;
+            if(!visitado[w]){
+                visitado[w] = 1;
+                pai[w] = v;
+                enfileirar(f, w);
+            }
+        }
+    }
+    destruirFila(f);
+    free(visitado);
+    return pai;
+}
+//End Busca em Largura
 
 
