@@ -20,6 +20,17 @@ typedef struct fila{
 
 typedef FILA* pFila;
 
+typedef struct nopilha{
+    int valor;
+    struct nopilha* ant;
+}NOPILHA;
+
+typedef struct pilha{
+    NOPILHA* topo;
+}PILHA;
+
+typedef PILHA* pPilha;
+
 pGrafo criarGrafo(int n);
 void destruirGrafo(pGrafo g);
 void inserirAresta(pGrafo g, int u, int v);
@@ -37,6 +48,13 @@ int existeCaminho(pGrafo g, int s, int t);
 //Criar caminho entre todos os pontos
 void buscaEmProfundidade(pGrafo g, int *pai, int p, int v);
 int* encontrarCaminhos(pGrafo g, int s);
+//Criar caminho entre todos os pontos utilizando Pilha
+PILHA* criarPilha();
+void destruirPilha(PILHA* pilha);
+void empilhar(PILHA* pilha, int s);
+int desempilhar(PILHA* pilha);
+int pilhaVazia(PILHA* pilha);
+int* buscaEmProfundidadePilha(pGrafo g, int s);
 void imprimirCaminhoReverso(int v, int *pai);
 void imprimirCaminho(int v, int *pai);
 //End Busca em Profundidade

@@ -212,6 +212,76 @@ int existeCaminho(pGrafo g, int s, int t){
     return encontrou;
 }
 
+//Criar caminho entre todos os pontos utilizando Pilha
+PILHA* criarPilha(){
+    PILHA* p = (PILHA*) malloc(sizeof(PILHA));
+    p->topo = NULL;
+    return p;
+}
+
+void destruirPilha(PILHA* pilha){
+    free(pilha);
+}
+
+void empilhar(PILHA* pilha, int s){
+    NOPILHA* novoNo = (NOPILHA*) malloc(sizeof(NOPILHA));
+    novoNo->valor = s;
+    if(pilha == NULL){
+        pilha = criarPilha();
+        novoNo->ant = NULL;
+        pilha->topo = novoNo;
+    }
+    else{
+        novoNo->ant = pilha->topo;
+        pilha->topo = novoNo;
+    }
+}
+
+int desempilhar(PILHA* pilha){
+    if(pilha == NULL){
+        return NULL;
+    }
+    else{
+        NOPILHA* aux = pilha->topo;
+        pilha->topo = pilha->topo->ant;
+        return aux->valor;
+        free(aux);
+    }
+}
+
+int pilhaVazia(PILHA* pilha){
+    if(pilha->topo == NULL){
+        return 1;
+    }
+    return 0;
+}
+
+int* buscaEmProfundidadePilha(pGrafo g, int s){
+    int w, v, *pai = (int*) malloc(g->n * sizeof(int)), *visitado = (int*) malloc(g->n * sizeof(int));
+    pNo t;
+    pPilha p = criarPilha();
+    for(v = 0; v < g->n; v++){
+        pai[v] = -1;
+        visitado[v] = 0;
+    }
+    empilhar(p, s);
+    pai[s] = s;
+    while(!pilhaVazia(p)){
+        v = desempilhar(p);
+        visitado[v] = 1;
+        for(t = g->adjacencia[v]; t != NULL; t = t->prox){
+            w = g->adjacencia[v]->v;
+            if(!visitado[w]){
+                pai[w] = v;
+                empilhar(p, w);
+            }
+        }
+    }
+    destruirPilha(p);
+    free(visitado);
+    return pai;
+}
+
 //End Busca em Profundidade
 
 void visitarRec(pGrafo g, int *componentes, int comp, int v){
