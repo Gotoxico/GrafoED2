@@ -68,6 +68,10 @@ int desenfileirar(FILA* fila);
 int filaVazia(FILA* fila);
 int* buscaEmLargura(pGrafo g, int s);
 //End Busca em Largura
+//Ordenacao Topologica
+void visitarRec2(pGrafo g, int *visitado, int v);
+void ordenacaoTopologica(pGrafo g);
+//End Ordenacao Topologica
 
 
 #include "GrafoMatriz.c"

@@ -338,3 +338,31 @@ int* buscaEmLargura(pGrafo g, int s){
 }
 //End Busca em Largura
 
+//Ordenacao Topologica
+void visitarRec2(pGrafo g, int *visitado, int v){
+    int u;
+    visitado[v] = 1;
+    for(u = 0; u < g->n; u++){
+        if(g->adjacencia[v][u]){
+            if(!visitado[u]){
+                visitarRec2(g, visitado, u);
+            }
+        }
+    }
+    printf("%d ", v);
+}
+
+void ordenacaoTopologica(pGrafo g){
+    int s, *visitado = (int*) malloc(g->n * sizeof(int));
+    for(s = 0; s < g->n; s++){
+        visitado[s] = 0;
+    }
+    for(s = 0; s < g->n; s++){
+        if(!visitado[s]){
+            visitarRec2(g, visitado, s);
+        }
+    }
+    free(visitado);
+    printf("\n");
+}
+//End Ordenacao Topologica
