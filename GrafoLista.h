@@ -3,6 +3,7 @@
 
 typedef struct no{
     int v;
+    int peso;
     struct no *prox;
 }NO;
 
@@ -38,11 +39,24 @@ typedef struct pilha{
 
 typedef PILHA* pPilha;
 
+typedef struct item{
+    int prioridade;
+    int vertice;
+}ITEM;
+
+typedef struct fp{
+    ITEM* v;
+    int* indice;
+    int n, tamanho;
+}FP;
+
+typedef FP* pFp;
+
 pGrafo criarGrafo(int n);
 void liberarLista(pNo lista);
 void destruirGrafo(pGrafo g);
-pNo inserirNaLista(pNo lista, int v);
-void inserirAresta(pGrafo g, int u, int v);
+pNo inserirNaLista(pNo lista, int v, int peso);
+void inserirAresta(pGrafo g, int u, int v, int peso);
 pNo removerDaLista(pNo lista, int v);
 void removerAresta(pGrafo g, int u, int v);
 int verificarAresta(pGrafo g, int u, int v);
@@ -83,7 +97,15 @@ int* buscaEmLargura(pGrafo g, int s);
 void visitarRec2(pGrafo g, int *visitado, int v);
 void ordenacaoTopologica(pGrafo g);
 //End Ordenacao Topologica
-
+//Dijkstra
+pFp criarFprio(int tamanho);
+void inserirFprio(pFp fprio, int vertice, int prioridade);
+int extrairMinimo(pFp fprio);
+int prioridade(pFp fprio, int vertice);
+void diminuirPrioridade(pFp fprio, int vertice, int novaPrioridade);
+int vazia(pFp fprio);
+int* dijkstra(pGrafo g, int s);
+//End Dijkstra
 
 #include "GrafoLista.c"
 #endif

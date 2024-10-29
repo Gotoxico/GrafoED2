@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "GrafoMatriz.h"
+#include <limits.h>
 
 pGrafo criarGrafo(int n){
     int i, j;
@@ -366,3 +367,143 @@ void ordenacaoTopologica(pGrafo g){
     printf("\n");
 }
 //End Ordenacao Topologica
+//Dijkstra
+pFp criarFprio(int tamanho){
+    pFp fprio = (pFp) malloc(sizeof(FP));
+    fprio->v = (ITEM*) malloc(tamanho * sizeof(ITEM));
+    fprio->indice = (int*) malloc(tamanho * sizeof(int));
+    fprio->n = 0;
+    fprio->tamanho = tamanho;
+    for(int i = 0; i < tamanho; i++){
+        fprio->indice[i] = -1;
+    }
+    return fprio;
+}
+
+void inserirFprio(pFp fprio, int vertice, int prioridade){
+    if(fprio->n >= fprio->tamanho){
+        return;
+    }
+    fprio->v[fprio->n].vertice = vertice;
+    fprio->v[fprio->n].prioridade = prioridade;
+    fprio->indice[vertice] = fprio->n;
+
+    int pos = fprio->n;
+    while(pos > 0 && fprio->v[(pos - 1) / 2].prioridade > fprio->v[pos].prioridade){
+        ITEM temp = fprio->v[pos];
+        fprio->v[pos] = fprio->v[(pos - 1) / 2];
+        fprio->v[(pos - 1) / 2] = temp;
+
+        fprio->indice[fprio->v[pos].vertice] = pos;
+        fprio->indice[fprio->v[(pos - 1) / 2].vertice] = (pos - 1) / 2;
+
+        pos = (pos - 1) / 2;
+    }
+
+    fprio->n++;
+}
+
+int extrairMinimo(pFp fprio){
+    if(fprio->n == 0){
+        return NULL;
+    }
+
+    int verticeMinimo = fprio->v[0].vertice;
+    fprio->indice[verticeMinimo] = -1;
+
+    fprio->n--;
+
+    fprio->v[0] = fprio->v[fprio->n];
+    fprio->indice[fprio->v[0].vertice] = 0;
+
+    int pos = 0;
+    while(1){
+        int esquerda = 2 * pos + 1;
+        int direita = 2 * pos + 2;
+        int menor = pos;
+
+        if(esquerda < fprio->n && fprio->v[esquerda].prioridade < fprio->v[menor].prioridade){
+            menor = esquerda;
+        }
+        if(direita < fprio->n && fprio->v[direita].prioridade < fprio->v[menor].prioridade){
+            menor = direita;
+        }
+
+        if(menor == pos){
+            break;
+        }
+
+        ITEM temp = fprio->v[pos];
+        fprio->v[pos] = fprio->v[menor];
+        fprio->v[menor] = temp;
+
+        fprio->indice[fprio->v[pos].vertice] = pos;
+        fprio->indice[fprio->v[menor].vertice] = menor;
+
+        pos = menor;
+    }
+    return verticeMinimo;
+}
+
+int prioridade(pFp fprio, int vertice){
+    int pos = fprio->indice[vertice];
+    if(pos == -1){
+        return NULL;
+    }
+    return fprio->v[pos].prioridade;
+}
+
+void diminuirPrioridade(pFp fprio, int vertice, int novaPrioridade){
+    int pos = fprio->indice[vertice];
+    if(pos = -1){
+        return;
+    }
+    if(novaPrioridade < fprio->v[pos].prioridade){
+        fprio->v[pos].prioridade = novaPrioridade;
+
+        while(pos > 0 && fprio->v[(pos - 1) / 2].prioridade > fprio->v[pos].prioridade){
+            ITEM temp = fprio->v[pos];
+            fprio->v[pos] = fprio->v[(pos - 1) / 2];
+            fprio->v[(pos - 1) / 2] = temp;
+
+            fprio->indice[fprio->v[pos].vertice] = pos;
+            fprio->indice[fprio->v[(pos - 1) / 2].vertice] = (pos - 1) / 2;
+
+            pos = (pos - 1) / 2;
+        }
+    }
+}
+
+int vazia(pFp fprio){
+    if(fprio->n == 0){
+        return 1;
+    }
+    return 0;
+}
+
+int* dijkstra(pGrafo g, int s){
+    int v, u, *pai = (int*) malloc(g->n * sizeof(int));
+    pFp h = criarFprio(g->n);
+    for(v = 0; v < g->n; v++){
+        pai[v] = -1;
+        inserirFprio(h, v, INT_MAX);
+    }
+    pai[s] = s;
+    diminuirPrioridade(h, s, 0);
+    while(!vazia(h)){
+        v = extrairMinimo(h);
+        if(prioridade(h, v) != INT_MAX){
+            for(u = 0; u < g->n; u++){
+                if(g->adjacencia[u][v]){
+                    if(prioridade(h, v) + t->peso < prioridade(h, t->v)){
+                        diminuirPrioridade(h, t->v, prioridade(h, v) + t->peso);
+                        pai[t->v] = v;
+                    }
+                }
+                
+            }
+        }
+    }
+    return pai;
+}
+//End Dijkstra
