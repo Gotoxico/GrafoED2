@@ -1,8 +1,15 @@
 #ifndef GRAFOMATRIZ_H
 #define GRAFOMATRIZ_H
 
+typedef struct noGrafo{
+    int v;
+    int peso;
+}NOGRAFO;
+
+typedef NOGRAFO* pNoGrafo;
+
 typedef struct grafo{
-    int **adjacencia;
+    pNoGrafo** adjacencia;
     int n;
 }GRAFO;
 
@@ -46,7 +53,7 @@ typedef FP* pFp;
 
 pGrafo criarGrafo(int n);
 void destruirGrafo(pGrafo g);
-void inserirAresta(pGrafo g, int u, int v);
+void inserirAresta(pGrafo g, int u, int v, int p);
 void removerAresta(pGrafo g, int u, int v);
 int verificarAresta(pGrafo g, int u, int v);
 pGrafo lerGrafo();

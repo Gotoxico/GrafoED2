@@ -7,13 +7,14 @@ pGrafo criarGrafo(int n){
     int i, j;
     pGrafo g = (pGrafo) malloc(sizeof(GRAFO));
     g->n = n;
-    g->adjacencia = (int**) malloc(n * sizeof(int *));
+    g->adjacencia = (pNoGrafo**) malloc(n * sizeof(pNoGrafo *));
     for(i = 0; i < n; i++){
-        g->adjacencia[i] = (int*) malloc(n * sizeof(int));
+        g->adjacencia[i] = (pNoGrafo*) malloc(n * sizeof(pNoGrafo));
     }
     for(i = 0; i < n; i++){
         for(j = 0; j < n; j++){
-            g->adjacencia[i][j] = 0;
+            g->adjacencia[i][j]->v = 0;
+            g->adjacencia[i][j]->peso = 0;
         }
     }
     return g;
@@ -28,22 +29,26 @@ void destruirGrafo(pGrafo g){
     free(g);
 }
 
-void inserirAresta(pGrafo g, int u, int v){
-    g->adjacencia[u][v] = 1;
-    g->adjacencia[v][u] = 1;
+void inserirAresta(pGrafo g, int u, int v, int p){
+    g->adjacencia[u][v]->v = 1;
+    g->adjacencia[v][u]->v = 1;
+    g->adjacencia[u][v]->peso = p;
+    g->adjacencia[v][u]->peso = p;
 }
 
 void removerAresta(pGrafo g, int u, int v){
-    g->adjacencia[u][v] = 0;
-    g->adjacencia[v][u] = 0;
+    g->adjacencia[u][v]->v = 0;
+    g->adjacencia[v][u]->v = 0;
+    g->adjacencia[u][v]->peso = 0;
+    g->adjacencia[v][u]->peso = 0;
 }
 
 int verificarAresta(pGrafo g, int u, int v){
-    return g->adjacencia[u][v];
+    return g->adjacencia[u][v]->v;
 }
 
 pGrafo lerGrafo(){
-    int n, m, i, u, v;
+    int n, m, i, u, v, p;
     pGrafo g;
     printf("Digite Tamanho Grafo: \n");
     scanf("%d", &n);
@@ -55,7 +60,9 @@ pGrafo lerGrafo(){
         scanf("%d", &u);
         printf("Digite Aresta 2: \n");
         scanf("%d", &v);
-        inserirAresta(g, u, v);
+        printf("Digite Peso Aresta: \n");
+        scanf("%d", &p);
+        inserirAresta(g, u, v, p);
     }
     return g;
 }
@@ -64,8 +71,8 @@ void imprimirArestas(pGrafo g){
     int u, v;
     for(u = 0; u < g->n; u++){
         for(v = u + 1; v < g->n; v++){
-            if(g->adjacencia[u][v]){
-                printf("{%d,%d}", u, v);
+            if(g->adjacencia[u][v]->v){
+                printf("{%d,%d} %d", u, v, g->adjacencia[u][v]->peso);
             }
         }
     }
@@ -74,7 +81,7 @@ void imprimirArestas(pGrafo g){
 int grau(pGrafo g, int u){
     int v, grau = 0;
     for(v = 0; v < g->n; v++){
-        if(g->adjacencia[u][v]){
+        if(g->adjacencia[u][v]->v){
             grau++;
         }
     }
@@ -98,9 +105,9 @@ int maisPopular(pGrafo g){
 void imprimirRecomendacoes(pGrafo g, int u){
     int v, w;
     for(v = 0; v < g->n; v++){
-        if(g->adjacencia[u][v]){
+        if(g->adjacencia[u][v]->v){
             for(w = 0; w < g->n; w++){
-                if(g->adjacencia[v][w] && w != u && !g->adjacencia[u][w]){
+                if(g->adjacencia[v][w]->v && w != u && !g->adjacencia[u][w]->v){
                     printf("%d\n", w);
                 }
             }
@@ -117,7 +124,7 @@ int buscaRec(pGrafo g, int *visitado, int v, int t){
     }
     visitado[v] = 1;
     for(w = 0; w < g->n; w++){
-        if(g->adjacencia[v][w] && !visitado[w]){
+        if(g->adjacencia[v][w]->v && !visitado[w]){
             if(buscaRec(g, visitado, w, t)){
                 return 1;
             }
@@ -140,7 +147,7 @@ int existeCaminho(pGrafo g, int s, int t){
 void buscaEmProfundidade(pGrafo g, int *pai, int p, int v){
     pai[v] = p;
     for(int u = 0; u < g->n; u++){
-        if(g->adjacencia[u][v]){
+        if(g->adjacencia[u][v]->v){
             if(pai[u] == -1){
                 buscaEmProfundidade(g, pai, v, u);
             }
@@ -214,7 +221,7 @@ int* buscaEmProfundidadePilha(pGrafo g, int s){
         v = desempilhar(p);
         visitado[v] = 1;
         for(w = 0; w < g->n; w++){
-            if(g->adjacencia[v][w] && !visitado[w]){
+            if(g->adjacencia[v][w]->v && !visitado[w]){
                 pai[w] = v;
                 empilhar(p, w);
             }
@@ -243,7 +250,7 @@ void imprimirCaminho(int v, int *pai){
 void visitarRec(pGrafo g, int *componentes, int comp, int v){
     componentes[v] = comp;
     for(int u = 0; u < g->n; u++){
-        if(g->adjacencia[u][v]){
+        if(g->adjacencia[u][v]->v){
             if(componentes[u] == -1){
                 visitarRec(g, componentes, comp, u);
             }
@@ -326,7 +333,7 @@ int* buscaEmLargura(pGrafo g, int s){
     while(!filaVazia(f)){
         v = desenfileirar(f);
         for(w = 0; w < g->n; w++){
-            if(g->adjacencia[v][w] && !visitado[w]){
+            if(g->adjacencia[v][w]->v && !visitado[w]){
                 visitado[w] = 1;
                 pai[w] = v;
                 enfileirar(f, w);
@@ -344,7 +351,7 @@ void visitarRec2(pGrafo g, int *visitado, int v){
     int u;
     visitado[v] = 1;
     for(u = 0; u < g->n; u++){
-        if(g->adjacencia[v][u]){
+        if(g->adjacencia[v][u]->v){
             if(!visitado[u]){
                 visitarRec2(g, visitado, u);
             }
@@ -494,7 +501,8 @@ int* dijkstra(pGrafo g, int s){
         v = extrairMinimo(h);
         if(prioridade(h, v) != INT_MAX){
             for(u = 0; u < g->n; u++){
-                if(g->adjacencia[u][v]){
+                if(g->adjacencia[u][v]->v){
+                    pNoGrafo t = g->adjacencia[u][v];
                     if(prioridade(h, v) + t->peso < prioridade(h, t->v)){
                         diminuirPrioridade(h, t->v, prioridade(h, v) + t->peso);
                         pai[t->v] = v;
