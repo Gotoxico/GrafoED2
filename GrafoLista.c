@@ -494,7 +494,7 @@ int extrairMinimo(pFp fprio){
 int prioridade(pFp fprio, int vertice){
     int pos = fprio->indice[vertice];
     if(pos == -1){
-        return NULL;
+        return INT_MAX;
     }
     return fprio->v[pos].prioridade;
 }
@@ -548,6 +548,31 @@ int* dijkstra(pGrafo g, int s){
             }
         }
     }
+    free(h);
     return pai;
 }
 //End Dijkstra
+//Arvore Geradora Minima
+int* Prim(pGrafo g, int s){
+    int v, *pai = (int*) malloc(g->n * sizeof(int));
+    pNo t;
+    pFp h = criarFprio(g->n);
+    for(v = 0; v < g->n; v++){
+        pai[v] = -1;
+        inserirFprio(h, v, INT_MAX);
+    }
+    pai[s] = s;
+    diminuirPrioridade(h, s, 0);
+    while(!vazia(h)){
+        v = extrairMinimo(h);
+        for(t = g->adjacencia[v]; t != NULL; t = t->prox){
+            if(t->peso < prioridade(h, t->v)){
+                diminuirPrioridade(h, t->v, t->peso);
+                pai[t->v] = v;
+            }
+        }
+    }
+    free(h);
+    return pai;
+}
+//End Arvore Geradora Minima

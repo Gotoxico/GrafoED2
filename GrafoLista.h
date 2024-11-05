@@ -106,6 +106,9 @@ void diminuirPrioridade(pFp fprio, int vertice, int novaPrioridade);
 int vazia(pFp fprio);
 int* dijkstra(pGrafo g, int s);
 //End Dijkstra
+//Arvore Geradora Minima
+int* Prim(pGrafo g, int s)
+//End Arvore Geradora Minima
 
 #include "GrafoLista.c"
 #endif

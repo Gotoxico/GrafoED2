@@ -512,6 +512,34 @@ int* dijkstra(pGrafo g, int s){
             }
         }
     }
+    free(h);
     return pai;
 }
 //End Dijkstra
+//Arvore Geradora Minima
+int* prim(pGrafo g, int s){
+    int v, u, *pai = (int*) malloc(g->n * sizeof(int));
+    pFp h = criarFprio(g->n);
+    for(v = 0; v < g->n; v++){
+        pai[v] = -1;
+        inserirFprio(h, v, INT_MAX);
+    }
+    pai[s] = s;
+    diminuirPrioridade(h, s, 0);
+    while(!vazia(h)){
+        v = extrairMinimo(h);
+        for(u = 0; u < g->n; u++){
+            if(g->adjacencia[u][v]->v){
+                pNoGrafo t = g->adjacencia[u][v];
+                if(t->peso < prioridade(h, t->v)){
+                    diminuirPrioridade(h, t->v, t->peso);
+                    pai[t->v] = v;
+                }
+            }
+                
+        }
+    }
+    free(h);
+    return pai;
+}
+//End Arvore Gerado Minima
