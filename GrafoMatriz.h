@@ -102,7 +102,7 @@ int vazia(pFp fprio);
 int* dijkstra(pGrafo g, int s);
 //End Dijkstra
 //Arvore Geradora Minima
-int* prim(pGrafo g, int s)
+int* prim(pGrafo g, int s);
 //End Arvore Geradora Minima
 
 #include "GrafoMatriz.c"

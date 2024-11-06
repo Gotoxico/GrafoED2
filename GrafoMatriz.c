@@ -1,18 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "GrafoMatriz.h"
 #include <limits.h>
+#include "GrafoMatriz.h"
 
 pGrafo criarGrafo(int n){
     int i, j;
     pGrafo g = (pGrafo) malloc(sizeof(GRAFO));
     g->n = n;
-    g->adjacencia = (pNoGrafo**) malloc(n * sizeof(pNoGrafo *));
+    g->adjacencia = (pNoGrafo**) malloc(n * sizeof(pNoGrafo*));
     for(i = 0; i < n; i++){
         g->adjacencia[i] = (pNoGrafo*) malloc(n * sizeof(pNoGrafo));
     }
     for(i = 0; i < n; i++){
         for(j = 0; j < n; j++){
+            g->adjacencia[i][j] = (pNoGrafo) malloc(sizeof(NOGRAFO));
             g->adjacencia[i][j]->v = 0;
             g->adjacencia[i][j]->peso = 0;
         }
@@ -21,8 +22,11 @@ pGrafo criarGrafo(int n){
 }
 
 void destruirGrafo(pGrafo g){
-    int i;
+    int i, j;
     for(i = 0; i < g->n; i++){
+        for(j = 0; j < g->n; j++){
+            free(g->adjacencia[i][j]);
+        }
         free(g->adjacencia[i]);
     }
     free(g->adjacencia);
@@ -191,7 +195,7 @@ void empilhar(PILHA* pilha, int s){
 
 int desempilhar(PILHA* pilha){
     if(pilha == NULL){
-        return NULL;
+        return INT_MAX;
     }
     else{
         NOPILHA* aux = pilha->topo;
@@ -281,6 +285,12 @@ FILA* criarFila(){
 }
 
 void destruirFila(FILA* fila){
+    NOFILA* atual = fila->inicio;
+    while (atual != NULL) {
+        NOFILA* aux = atual;
+        atual = atual->prox;
+        free(aux);
+    }
     free(fila);
 }
 
@@ -295,19 +305,30 @@ void enfileirar(FILA* fila, int s){
         fila->fim = novoNo;
     }
     else{
-        fila->fim->prox = novoNo;
+        if(fila->inicio == NULL){
+            fila->inicio = novoNo;
+            fila->fim = novoNo;
+        }
+        else{
+            fila->fim->prox = novoNo;
+            fila->fim = novoNo;
+        }
     }
 }
 
 int desenfileirar(FILA* fila){
-    if(fila == NULL){
-        return NULL;
+    if(fila->inicio == NULL){
+        return INT_MAX;
     }
     else{
         NOFILA* aux = fila->inicio;
+        int valor = aux->valor;
         fila->inicio = fila->inicio->prox;
-        return aux->valor;
+        if(fila->inicio == NULL){
+            fila->fim = NULL;
+        }
         free(aux);
+        return valor;
     }
 }
 
@@ -412,7 +433,7 @@ void inserirFprio(pFp fprio, int vertice, int prioridade){
 
 int extrairMinimo(pFp fprio){
     if(fprio->n == 0){
-        return NULL;
+        return INT_MAX;
     }
 
     int verticeMinimo = fprio->v[0].vertice;
@@ -455,14 +476,14 @@ int extrairMinimo(pFp fprio){
 int prioridade(pFp fprio, int vertice){
     int pos = fprio->indice[vertice];
     if(pos == -1){
-        return NULL;
+        return INT_MAX;
     }
     return fprio->v[pos].prioridade;
 }
 
 void diminuirPrioridade(pFp fprio, int vertice, int novaPrioridade){
     int pos = fprio->indice[vertice];
-    if(pos = -1){
+    if(pos == -1){
         return;
     }
     if(novaPrioridade < fprio->v[pos].prioridade){
