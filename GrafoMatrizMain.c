@@ -1,58 +1,72 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "GrafoMatriz.h" // Inclui o novo cabeçalho GrafoMatriz
+#include "GrafoMatriz.h"
 
 int main() {
-    int n = 5; // Exemplo com 5 vértices
+    int n = 6;  // Quantidade de vertices no grafo
     pGrafo g = criarGrafo(n);
 
-    // Adiciona arestas ao grafo (Exemplo de Grafo)
-    inserirAresta(g, 0, 1, 10);
-    inserirAresta(g, 0, 2, 5);
-    inserirAresta(g, 1, 2, 2);
-    inserirAresta(g, 1, 3, 1);
-    inserirAresta(g, 2, 3, 9);
-    inserirAresta(g, 2, 4, 2);
-    inserirAresta(g, 3, 4, 4);
+    // Adicionando arestas com pesos
+    inserirAresta(g, 0, 1, 2);
+    inserirAresta(g, 0, 2, 4);
+    inserirAresta(g, 1, 2, 1);
+    inserirAresta(g, 1, 3, 7);
+    inserirAresta(g, 2, 4, 3);
+    inserirAresta(g, 3, 5, 1);
+    inserirAresta(g, 4, 5, 5);
 
-    printf("Arestas do Grafo:\n");
+    // Imprimir as arestas do grafo
+    printf("Arestas do grafo:\n");
     imprimirArestas(g);
 
-    // Busca em Largura a partir do vértice 0
-    printf("\nBusca em Largura a partir do vértice 0:\n");
-    int* bfs_result = buscaEmLargura(g, 0);
+    // Testando busca em largura
+    printf("\nResultado da Busca em Largura a partir do vértice 0:\n");
+    int* paisBFS = buscaEmLargura(g, 0);
+    imprimirCaminho(5, paisBFS);  // Imprime caminho do vértice 0 ao 5
+    printf("\n");
     for (int i = 0; i < n; i++) {
-        printf("Vértice %d -> Pai %d\n", i, bfs_result[i]);
+        printf("Pai do vértice %d: %d\n", i, paisBFS[i]);
     }
-    free(bfs_result);
+    free(paisBFS);
 
-    // Busca em Profundidade a partir do vértice 0
-    printf("\nBusca em Profundidade a partir do vértice 0:\n");
-    int* dfs_result = encontrarCaminhos(g, 0);
+    // Testando busca em profundidade
+    printf("\nResultado da Busca em Profundidade a partir do vértice 0:\n");
+    int* paisDFS = encontrarCaminhos(g, 0);
+    imprimirCaminho(5, paisDFS);  // Imprime caminho do vértice 0 ao 5
+    printf("\n");
     for (int i = 0; i < n; i++) {
-        printf("Vértice %d -> Pai %d\n", i, dfs_result[i]);
+        printf("Pai do vértice %d: %d\n", i, paisDFS[i]);
     }
-    free(dfs_result);
+    free(paisDFS);
 
-    // Algoritmo de Dijkstra a partir do vértice 0
-    printf("\nMenores caminhos a partir do vértice 0 (Dijkstra):\n");
-    int* dijkstra_result = dijkstra(g, 0);
+    // Testando o algoritmo de Dijkstra
+    int* distDijkstra = dijkstra(g, 0);
+    printf("\nResultado do algoritmo de Dijkstra a partir do vértice 0:\n");
     for (int i = 0; i < n; i++) {
-        printf("Menor caminho até o vértice %d = %d\n", i, dijkstra_result[i]);
+        printf("Distância mínima até o vértice %d: %d\n", i, distDijkstra[i]);
     }
-    free(dijkstra_result);
+    free(distDijkstra);
 
-    // Algoritmo de Prim para a Árvore Geradora Mínima a partir do vértice 0
-    printf("\nÁrvore Geradora Mínima usando o algoritmo de Prim a partir do vértice 0:\n");
-    int* prim_result = prim(g, 0);
-    for (int i = 1; i < n; i++) { // Começa de 1, pois 0 é a raiz
-        printf("Aresta %d - %d\n", prim_result[i], i);
+    // Testando o algoritmo de Prim
+    int* paiPrim = prim(g, 0);
+
+    for(int i = 0; i < n; i++){
+        printf("%d\n", paiPrim[i]);
     }
-    free(prim_result);
 
-    // Liberação de memória
+    printf("\nResultado do algoritmo de Prim a partir do vértice 0:\n");
+    for (int i = 1; i < n; i++) {
+        if (paiPrim[i] != -1) {
+            printf("Aresta: (%d, %d)\n", paiPrim[i], i);
+        }
+    }
+    free(paiPrim);
+
+    // Liberar memória
     destruirGrafo(g);
 
     return 0;
 }
+
+
 

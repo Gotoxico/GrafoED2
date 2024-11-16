@@ -76,7 +76,7 @@ void imprimirArestas(pGrafo g){
     for(u = 0; u < g->n; u++){
         for(v = u + 1; v < g->n; v++){
             if(g->adjacencia[u][v]->v){
-                printf("{%d,%d} %d", u, v, g->adjacencia[u][v]->peso);
+                printf("{%d,%d} %d ", u, v, g->adjacencia[u][v]->peso);
             }
         }
     }
@@ -509,55 +509,69 @@ int vazia(pFp fprio){
     return 0;
 }
 
+void destruirFprio(pFp fprio) {
+    free(fprio->v);
+    free(fprio->indice);
+    free(fprio);
+}
+
 int* dijkstra(pGrafo g, int s){
-    int v, u, *pai = (int*) malloc(g->n * sizeof(int));
+    int v, u, *pai = (int*) malloc(g->n * sizeof(int)), *distancia = (int*) malloc(g->n * sizeof(int));
     pFp h = criarFprio(g->n);
     for(v = 0; v < g->n; v++){
+        distancia[v] = INT_MAX;
         pai[v] = -1;
         inserirFprio(h, v, INT_MAX);
     }
+    distancia[s] = 0;
     pai[s] = s;
     diminuirPrioridade(h, s, 0);
+
     while(!vazia(h)){
         v = extrairMinimo(h);
-        if(prioridade(h, v) != INT_MAX){
+        if(distancia[v] != INT_MAX){
             for(u = 0; u < g->n; u++){
-                if(g->adjacencia[u][v]->v){
-                    pNoGrafo t = g->adjacencia[u][v];
-                    if(prioridade(h, v) + t->peso < prioridade(h, t->v)){
-                        diminuirPrioridade(h, t->v, prioridade(h, v) + t->peso);
-                        pai[t->v] = v;
+                if(g->adjacencia[v][u]->v){
+                    pNoGrafo t = g->adjacencia[v][u];
+                    if(distancia[v] + t->peso < distancia[u]){
+                        distancia[u] = distancia[v] + t->peso;
+                        diminuirPrioridade(h, u, distancia[u]);
+                        pai[u] = v;
                     }
                 }
                 
             }
         }
     }
-    free(h);
-    return pai;
+    destruirFprio(h);
+    return distancia;
 }
 //End Dijkstra
 //Arvore Geradora Minima
 int* prim(pGrafo g, int s){
-    int v, u, *pai = (int*) malloc(g->n * sizeof(int));
+    int v, u, *pai = (int*) malloc(g->n * sizeof(int)), *chaves = (int*) malloc(g->n * sizeof(int));
     pFp h = criarFprio(g->n);
     for(v = 0; v < g->n; v++){
+        chaves[v] = INT_MAX;
         pai[v] = -1;
         inserirFprio(h, v, INT_MAX);
     }
+
+    chaves[s] = 0;
     pai[s] = s;
     diminuirPrioridade(h, s, 0);
+
     while(!vazia(h)){
         v = extrairMinimo(h);
         for(u = 0; u < g->n; u++){
-            if(g->adjacencia[u][v]->v){
-                pNoGrafo t = g->adjacencia[u][v];
-                if(t->peso < prioridade(h, t->v)){
-                    diminuirPrioridade(h, t->v, t->peso);
-                    pai[t->v] = v;
+            if(g->adjacencia[v][u]->v){
+                pNoGrafo t = g->adjacencia[v][u];
+                if(t->peso < chaves[u] && prioridade(h, u) != -1){
+                    chaves[u] = t->peso;
+                    pai[u] = v;
+                    diminuirPrioridade(h, u, t->peso);
                 }
             }
-                
         }
     }
     free(h);

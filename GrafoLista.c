@@ -99,9 +99,10 @@ pGrafo lerGrafo(){
 void imprimirArestas(pGrafo g){
     int u;
     for(u = 0; u < g->n; u++){
-        while(g->adjacencia[u] != NULL){
-            printf("{%d,%d} %d ", u, g->adjacencia[u]->v, g->adjacencia[u]->peso);
-            g->adjacencia[u] = g->adjacencia[u]->prox;
+        pNo t = g->adjacencia[u];
+        while(t != NULL){
+            printf("{%d,%d} %d ", u, t->v, t->peso);
+            t = t->prox;
         }
     }
 }
@@ -544,52 +545,69 @@ int vazia(pFp fprio){
     return 0;
 }
 
+void destruirFprio(pFp fprio) {
+    free(fprio->v);
+    free(fprio->indice);
+    free(fprio);
+}
+
 int* dijkstra(pGrafo g, int s){
-    int v, *pai = (int*) malloc(g->n * sizeof(int));
+    int v, *pai = (int*) malloc(g->n * sizeof(int)), *distancia = (int*) malloc(g->n * sizeof(int));
     pNo t;
     pFp h = criarFprio(g->n);
     for(v = 0; v < g->n; v++){
+        distancia[v] = INT_MAX;
         pai[v] = -1;
         inserirFprio(h, v, INT_MAX);
     }
+
+    distancia[s] = 0;
     pai[s] = s;
     diminuirPrioridade(h, s, 0);
+
     while(!vazia(h)){
         v = extrairMinimo(h);
-        if(prioridade(h, v) != INT_MAX){
+        if(distancia[v] != INT_MAX){
             for(t = g->adjacencia[v]; t != NULL; t = t->prox){
-                if(prioridade(h, v) + t->peso < prioridade(h, t->v)){
-                    diminuirPrioridade(h, t->v, prioridade(h, v) + t->peso);
+                if(distancia[v] + t->peso < distancia[t->v]){
+                    distancia[t->v] = distancia[v] + t->peso;
+                    diminuirPrioridade(h, t->v, distancia[t->v]);
                     pai[t->v] = v;
                 }
             }
         }
     }
-    free(h);
-    return pai;
+
+    destruirFprio(h);
+    return distancia;
 }
 //End Dijkstra
 //Arvore Geradora Minima
-int* Prim(pGrafo g, int s){
-    int v, *pai = (int*) malloc(g->n * sizeof(int));
+int* prim(pGrafo g, int s){
+    int v, *pai = (int*) malloc(g->n * sizeof(int)), *chaves = (int*) malloc(g->n * sizeof(int));
     pNo t;
     pFp h = criarFprio(g->n);
     for(v = 0; v < g->n; v++){
+        chaves[v] = INT_MAX;
         pai[v] = -1;
         inserirFprio(h, v, INT_MAX);
     }
+    chaves[s] = 0;
     pai[s] = s;
     diminuirPrioridade(h, s, 0);
+
     while(!vazia(h)){
         v = extrairMinimo(h);
         for(t = g->adjacencia[v]; t != NULL; t = t->prox){
-            if(t->peso < prioridade(h, t->v)){
-                diminuirPrioridade(h, t->v, t->peso);
+            if(t->peso < chaves[t->v] && prioridade(h, t->v) != -1){
+                chaves[t->v] = t->peso;
                 pai[t->v] = v;
+                diminuirPrioridade(h, t->v, t->peso);
             }
         }
     }
     free(h);
+    free(chaves);
     return pai;
 }
 //End Arvore Geradora Minima
