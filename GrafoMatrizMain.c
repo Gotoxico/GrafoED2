@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "GrafoMatriz.h"
 
+
 int main() {
     int n = 6;  // Quantidade de vertices no grafo
     pGrafo g = criarGrafo(n);
@@ -72,8 +73,8 @@ int main() {
     printf("\nResultado da Busca em Profundidade a partir do vértice 0:\n");
     int* paisDFS = encontrarCaminhos(g, 0);
 
-    printf("Caminho do vértice 0 ao 5: ");
-    imprimirCaminho(5, paisDFS);  // Imprime caminho do vértice 0 ao 5
+   
+   
     printf("\n");
     for (int i = 0; i < n; i++) {
         printf("Pai do vértice %d: %d\n", i, paisDFS[i]);
