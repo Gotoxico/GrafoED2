@@ -1,57 +1,71 @@
 #ifndef GRAFOLISTA_H
 #define GRAFOLISTA_H
 
+/// @brief Estrutura de nó de lista
 typedef struct no{
     int v;
     int peso;
     struct no *prox;
 }NO;
 
+/// @brief Ponteiro para nó
 typedef NO* pNo;
 
+/// @brief Estrutura de grafo
 typedef struct grafo{
     pNo* adjacencia;
     int n; 
 }GRAFO;
 
+/// @brief Ponteiro para grafo
 typedef GRAFO* pGrafo;
 
+/// @brief Estrutura de nó de fila
 typedef struct nofila{
     int valor;
     struct nofila* prox;
 }NOFILA;
 
+/// @brief Estrutura de fila
 typedef struct fila{
     NOFILA* inicio;
     NOFILA* fim;
 }FILA;
 
+/// @brief Ponteiro para fila
 typedef FILA* pFila;
 
+/// @brief Estrutura de nó de pilha
 typedef struct nopilha{
     int valor;
     struct nopilha* ant;
 }NOPILHA;
 
+/// @brief Estrutura de pilha
 typedef struct pilha{
     NOPILHA* topo;
 }PILHA;
 
+/// @brief Ponteiro para pilha
 typedef PILHA* pPilha;
 
+/// @brief Estrutura de item
 typedef struct item{
     int prioridade;
     int vertice;
 }ITEM;
 
+/// @brief Estrutura de fila de prioridade
 typedef struct fp{
     ITEM* v;
     int* indice;
     int n, tamanho;
 }FP;
 
+/// @brief Ponteiro para fila de prioridade
 typedef FP* pFp;
 
+//Funções 
 pGrafo criarGrafo(int n);
 void liberarLista(pNo lista);
 void destruirGrafo(pGrafo g);

@@ -3,6 +3,9 @@
 #include "GrafoLista.h"
 #include <limits.h>
 
+/// @brief Função para criar um grafo
+/// @param n Inteiro que representa o tamanho do grafo
+/// @return pGrafo Ponteiro para o grafo criado
 pGrafo criarGrafo(int n){
     int i;
     pGrafo g = (pGrafo) malloc(sizeof(GRAFO));
@@ -14,6 +17,8 @@ pGrafo criarGrafo(int n){
     return g;
 }
 
+/// @brief Função para liberar uma lista
+/// @param lista Ponteiro para a lista a ser liberada
 void liberarLista(pNo lista){
     if(lista != NULL){
         liberarLista(lista->prox);
@@ -21,6 +26,8 @@ void liberarLista(pNo lista){
     }
 }
 
+/// @brief Função para destruir um grafo
+/// @param g Ponteiro para o grafo a ser destruído
 void destruirGrafo(pGrafo g){
     int i;
     for(i = 0; i < g->n; i++){
@@ -30,6 +37,11 @@ void destruirGrafo(pGrafo g){
     free(g);
 }
 
+/// @brief Função para inserir um nó na lista
+/// @param lista Ponteiro para a lista
+/// @param v Inteiro que representa o vértice
+/// @param peso Inteiro que representa o peso
+/// @return pNo Ponteiro para o nó inserido
 pNo inserirNaLista(pNo lista, int v, int peso){
     pNo novo = (pNo) malloc(sizeof(NO));
     novo->v = v;
@@ -38,11 +50,20 @@ pNo inserirNaLista(pNo lista, int v, int peso){
     return novo;
 }
 
+/// @brief Função para inserir uma aresta no grafo
+/// @param g Ponteiro para o grafo
+/// @param u Inteiro que representa o primeiro vértice
+/// @param v Inteiro que representa o segundo vértice
+/// @param peso Inteiro que representa o peso da aresta
 void inserirAresta(pGrafo g, int u, int v, int peso){
     g->adjacencia[v] = inserirNaLista(g->adjacencia[v], u, peso);
     g->adjacencia[u] = inserirNaLista(g->adjacencia[u], v, peso);
 }
 
+/// @brief Função para remover um nó da lista
+/// @param lista Ponteiro para a lista
+/// @param v Inteiro que representa o vértice
+/// @return pNo Ponteiro para o nó removido
 pNo removerDaLista(pNo lista, int v){
     pNo proximo;
     if(lista == NULL){
@@ -61,11 +82,20 @@ pNo removerDaLista(pNo lista, int v){
     }
 }
 
+/// @brief Função para remover uma aresta do grafo
+/// @param g Ponteiro para o grafo
+/// @param u Inteiro que representa o primeiro vértice
+/// @param v Inteiro que representa o segundo vértice
 void removerAresta(pGrafo g, int u, int v){
     g->adjacencia[v] = removerDaLista(g->adjacencia[v], u);
     g->adjacencia[u] = removerDaLista(g->adjacencia[u], v);
 }
 
+/// @brief Função para verificar se uma aresta existe no grafo
+/// @param g Ponteiro para o grafo
+/// @param u Inteiro que representa o primeiro vértice
+/// @param v Inteiro que representa o segundo vértice
+/// @return int 1 se a aresta existe, 0 caso contrário
 int verificarAresta(pGrafo g, int u, int v){
     pNo t;
     for(t = g->adjacencia[u]; t != NULL; t = t->prox){
@@ -76,6 +106,8 @@ int verificarAresta(pGrafo g, int u, int v){
     return 0;
 }
 
+/// @brief Função para ler um grafo
+/// @return pGrafo Ponteiro para o grafo lido
 pGrafo lerGrafo(){
     int n, m, i, u, v, p;
     pGrafo g;
@@ -96,6 +128,8 @@ pGrafo lerGrafo(){
     return g;
 }
 
+/// @brief Função para imprimir as arestas do grafo
+/// @param g Ponteiro para o grafo
 void imprimirArestas(pGrafo g){
     int u;
     for(u = 0; u < g->n; u++){
@@ -107,6 +141,10 @@ void imprimirArestas(pGrafo g){
     }
 }
 
+/// @brief Função para calcular o grau de um vértice
+/// @param g Ponteiro para o grafo
+/// @param u Inteiro que representa o vértice
+/// @return int Grau do vértice
 int grau(pGrafo g, int u){
     int grau = 0;
     while(g->adjacencia[u] != NULL){
@@ -116,6 +154,9 @@ int grau(pGrafo g, int u){
     return grau;
 }
 
+/// @brief Função para calcular o vértice mais popular
+/// @param g Ponteiro para o grafo
+/// @return int Vértice mais popular
 int maisPopular(pGrafo g){
     int u, max, grauMax, grauAtual;
     max = 0;
@@ -130,6 +171,11 @@ int maisPopular(pGrafo g){
     return max;
 }
 
+/// @brief Função para encontrar as arestas de um vértice
+/// @param g Ponteiro para o grafo
+/// @param u Inteiro que representa o vértice
+/// @param v Inteiro que representa o vértice
+/// @return int 1 se a aresta existe, 0 caso contrário
 int encontrarArestas(pGrafo g, int u, int v){
     while(g->adjacencia[u] != NULL){
         if(g->adjacencia[u]->v == v){
@@ -140,6 +186,9 @@ int encontrarArestas(pGrafo g, int u, int v){
     return 0;
 }
 
+/// @brief Função para imprimir as recomendações de um vértice
+/// @param g Ponteiro para o grafo
+/// @param u Inteiro que representa o vértice
 void imprimirRecomendacoes(pGrafo g, int u){
     int v, w;
     while(g->adjacencia[u] != NULL){
@@ -155,8 +204,11 @@ void imprimirRecomendacoes(pGrafo g, int u){
     }
 }
 
-//Busca em Profundidade
-//Criar caminho entre todos os pontos
+/// @brief Função para Busca em Profundidade
+/// @param g Ponteiro para o grafo
+/// @param pai Vetor de inteiros que representa os pais dos vértices
+/// @param p Inteiro que representa o pai do vértice atual
+/// @param v Inteiro que representa o vértice atual
 void buscaEmProfundidade(pGrafo g, int *pai, int p, int v){
     pNo t;
     pai[v] = p;
@@ -167,6 +219,10 @@ void buscaEmProfundidade(pGrafo g, int *pai, int p, int v){
     }
 }
 
+/// @brief Função para encontrar caminhos
+/// @param g Ponteiro para o grafo
+/// @param s Inteiro que representa o vértice de origem
+/// @return int* Vetor de inteiros que representa os pais dos vértices
 int* encontrarCaminhos(pGrafo g, int s){
     int i, *pai = (int*) malloc(g->n * sizeof(int));
     for(i = 0; i < g->n; i++){
@@ -176,6 +232,9 @@ int* encontrarCaminhos(pGrafo g, int s){
     return pai;
 }
 
+/// @brief Função para imprimir o caminho reverso
+/// @param v Inteiro que representa o vértice
+/// @param pai Vetor de inteiros que representa os pais dos vértices
 void imprimirCaminhoReverso(int v, int *pai){
     printf("%d\t", v);
     if(pai[v] != v){
@@ -183,6 +242,9 @@ void imprimirCaminhoReverso(int v, int *pai){
     }
 }
 
+/// @brief Função para imprimir o caminho
+/// @param v Inteiro que representa o vértice
+/// @param pai Vetor de inteiros que representa os pais dos vértices
 void imprimirCaminho(int v, int *pai){
     if(pai[v] != v){
         imprimirCaminho(pai[v], pai);
@@ -190,7 +252,12 @@ void imprimirCaminho(int v, int *pai){
     printf("%d\t", v);
 }
 
-//Buscar pra ver se existe caminho entre um ponto e outro
+/// @brief Função para visitar recursivamente
+/// @param g Ponteiro para o grafo
+/// @param visitado Vetor de inteiros que representa os vértices visitados
+/// @param v Inteiro que representa o vértice atual
+/// @param t Inteiro que representa o vértice alvo
+/// @return int 1 se encontrou, 0 caso contrário
 int buscaRec(pGrafo g, int *visitado, int v, int t){
     int w;
     if(v == t){
@@ -207,6 +274,11 @@ int buscaRec(pGrafo g, int *visitado, int v, int t){
     return 0;
 }
 
+/// @brief Função para verificar se existe um caminho entre dois vértices
+/// @param g Ponteiro para o grafo
+/// @param s Inteiro que representa o vértice de origem
+/// @param t Inteiro que representa o vértice de destino
+/// @return int 1 se encontrou, 0 caso contrário
 int existeCaminho(pGrafo g, int s, int t){
     int encontrou, i, *visitado = (int*) malloc(g->n * sizeof(int));
     for(i = 0; i < g->n; i++){
@@ -217,17 +289,23 @@ int existeCaminho(pGrafo g, int s, int t){
     return encontrou;
 }
 
-//Criar caminho entre todos os pontos utilizando Pilha
+/// @brief Função para criar uma pilha
+/// @return pPilha Ponteiro para a pilha criada
 PILHA* criarPilha(){
     PILHA* p = (PILHA*) malloc(sizeof(PILHA));
     p->topo = NULL;
     return p;
 }
 
+/// @brief Função para destruir uma pilha
+/// @param pilha Ponteiro para a pilha a ser destruída
 void destruirPilha(PILHA* pilha){
     free(pilha);
 }
 
+/// @brief Função para empilhar
+/// @param pilha Ponteiro para a pilha
+/// @param s Inteiro que representa o valor a ser empilhado
 void empilhar(PILHA* pilha, int s){
     NOPILHA* novoNo = (NOPILHA*) malloc(sizeof(NOPILHA));
     novoNo->valor = s;
@@ -242,6 +320,9 @@ void empilhar(PILHA* pilha, int s){
     }
 }
 
+/// @brief Função para desempilhar
+/// @param pilha Ponteiro para a pilha
+/// @return int Valor desempilhado
 int desempilhar(PILHA* pilha){
     if(pilha == NULL){
         return INT_MAX;
@@ -254,6 +335,9 @@ int desempilhar(PILHA* pilha){
     }
 }
 
+/// @brief Função para verificar se a pilha está vazia
+/// @param pilha Ponteiro para a pilha
+/// @return int 1 se a pilha está vazia, 0 caso contrário
 int pilhaVazia(PILHA* pilha){
     if(pilha->topo == NULL){
         return 1;
@@ -261,6 +345,10 @@ int pilhaVazia(PILHA* pilha){
     return 0;
 }
 
+/// @brief Função para Busca em Profundidade utilizando Pilha
+/// @param g Ponteiro para o grafo
+/// @param s Inteiro que representa o vértice de origem
+/// @return int* Vetor de inteiros que representa os pais dos vértices
 int* buscaEmProfundidadePilha(pGrafo g, int s){
     int w, v, *pai = (int*) malloc(g->n * sizeof(int)), *visitado = (int*) malloc(g->n * sizeof(int));
     pNo t;
@@ -287,8 +375,11 @@ int* buscaEmProfundidadePilha(pGrafo g, int s){
     return pai;
 }
 
-//End Busca em Profundidade
-
+/// @brief Função para visitar recursivamente
+/// @param g Ponteiro para o grafo
+/// @param componentes Vetor de inteiros que representa os componentes
+/// @param comp Inteiro que representa o componente atual
+/// @param v Inteiro que representa o vértice atual
 void visitarRec(pGrafo g, int *componentes, int comp, int v){
     pNo t;
     componentes[v] = comp;
@@ -299,6 +390,9 @@ void visitarRec(pGrafo g, int *componentes, int comp, int v){
     }
 }
 
+/// @brief Função para encontrar componentes
+/// @param g Ponteiro para o grafo
+/// @return int* Vetor de inteiros que representa os componentes
 int* encontrarComponentes(pGrafo g){
     int s, c = 0, *componentes = (int*) malloc(g->n * sizeof(int));
     for(s = 0; s < g->n; s++){
@@ -313,7 +407,8 @@ int* encontrarComponentes(pGrafo g){
     return componentes;
 }
 
-//Busca em Largura
+/// @brief Função para criar uma fila
+/// @return pFila Ponteiro para a fila criada
 FILA* criarFila(){
     FILA* f = (FILA*) malloc(sizeof(FILA));
     f->inicio = NULL;
@@ -321,6 +416,8 @@ FILA* criarFila(){
     return f;
 }
 
+/// @brief Função para destruir uma fila
+/// @param fila Ponteiro para a fila a ser destruída
 void destruirFila(FILA* fila){
     NOFILA* atual = fila->inicio;
     while (atual != NULL) {
@@ -331,6 +428,9 @@ void destruirFila(FILA* fila){
     free(fila);
 }
 
+/// @brief Função para enfileirar
+/// @param fila Ponteiro para a fila
+/// @param s Inteiro que representa o valor a ser enfileirado
 void enfileirar(FILA* fila, int s){
     NOFILA* novoNo = (NOFILA*) malloc(sizeof(NOFILA));
     novoNo->valor = s;
@@ -353,6 +453,9 @@ void enfileirar(FILA* fila, int s){
     }
 }
 
+/// @brief Função para desenfileirar
+/// @param fila Ponteiro para a fila
+/// @return int Valor desenfileirado
 int desenfileirar(FILA* fila){
     if(fila->inicio == NULL){
         return INT_MAX;
@@ -369,6 +472,9 @@ int desenfileirar(FILA* fila){
     }
 }
 
+/// @brief Função para verificar se a fila está vazia
+/// @param fila Ponteiro para a fila
+/// @return int 1 se a fila está vazia, 0 caso contrário
 int filaVazia(FILA* fila){
     if(fila->inicio == NULL){
         return 1;
@@ -376,6 +482,10 @@ int filaVazia(FILA* fila){
     return 0;
 }
 
+/// @brief Função para Busca em Largura utilizando Fila
+/// @param g Ponteiro para o grafo
+/// @param s Inteiro que representa o vértice de origem
+/// @return int* Vetor de inteiros que representa os pais dos vértices
 int* buscaEmLargura(pGrafo g, int s){
     int w, v;
     int *pai = (int*) malloc(g->n * sizeof(int));
@@ -404,8 +514,11 @@ int* buscaEmLargura(pGrafo g, int s){
     free(visitado);
     return pai;
 }
-//End Busca em Largura
-//Ordenacao Topologica
+
+/// @brief Função para visitar recursivamente
+/// @param g Ponteiro para o grafo
+/// @param visitado Vetor de inteiros que representa os vértices visitados
+/// @param v Inteiro que representa o vértice atual
 void visitarRec2(pGrafo g, int *visitado, int v){
     pNo t;
     visitado[v] = 1;
@@ -417,6 +530,8 @@ void visitarRec2(pGrafo g, int *visitado, int v){
     printf("%d ", v);
 }
 
+/// @brief Função para Ordenação Topológica
+/// @param g Ponteiro para o grafo
 void ordenacaoTopologica(pGrafo g){
     int s, *visitado = (int*) malloc(g->n * sizeof(int));
     for(s = 0; s < g->n; s++){
@@ -430,8 +545,10 @@ void ordenacaoTopologica(pGrafo g){
     free(visitado);
     printf("\n");
 }
-//End Ordenacao Topologica
-//Dijkstra
+
+/// @brief Função para criar uma fila de prioridade
+/// @param tamanho Inteiro que representa o tamanho da fila de prioridade
+/// @return pFp Ponteiro para a fila de prioridade criada
 pFp criarFprio(int tamanho){
     pFp fprio = (pFp) malloc(sizeof(FP));
     fprio->v = (ITEM*) malloc(tamanho * sizeof(ITEM));
@@ -444,6 +561,10 @@ pFp criarFprio(int tamanho){
     return fprio;
 }
 
+/// @brief Função para inserir um elemento na fila de prioridade
+/// @param fprio Ponteiro para a fila de prioridade
+/// @param vertice Inteiro que representa o vértice
+/// @param prioridade   Inteiro que representa a prioridade
 void inserirFprio(pFp fprio, int vertice, int prioridade){
     if(fprio->n >= fprio->tamanho){
         return;
@@ -467,6 +588,9 @@ void inserirFprio(pFp fprio, int vertice, int prioridade){
     fprio->n++;
 }
 
+/// @brief Função para extrair o mínimo da fila de prioridade
+/// @param fprio Ponteiro para a fila de prioridade
+/// @return int Vértice mínimo
 int extrairMinimo(pFp fprio){
     if(fprio->n == 0){
         return INT_MAX;
@@ -509,6 +633,10 @@ int extrairMinimo(pFp fprio){
     return verticeMinimo;
 }
 
+/// @brief Função para retornar a prioridade de um vértice
+/// @param fprio Ponteiro para a fila de prioridade
+/// @param vertice Inteiro que representa o vértice
+/// @return int Prioridade do vértice
 int prioridade(pFp fprio, int vertice){
     int pos = fprio->indice[vertice];
     if(pos == -1){
@@ -517,6 +645,10 @@ int prioridade(pFp fprio, int vertice){
     return fprio->v[pos].prioridade;
 }
 
+/// @brief Função para diminuir a prioridade de um vértice
+/// @param fprio Ponteiro para a fila de prioridade
+/// @param vertice Inteiro que representa o vértice
+/// @param novaPrioridade Inteiro que representa a nova prioridade
 void diminuirPrioridade(pFp fprio, int vertice, int novaPrioridade){
     int pos = fprio->indice[vertice];
     if(pos == -1){
@@ -538,6 +670,9 @@ void diminuirPrioridade(pFp fprio, int vertice, int novaPrioridade){
     }
 }
 
+/// @brief Função para verificar se a fila de prioridade está vazia
+/// @param fprio Ponteiro para a fila de prioridade
+/// @return int 1 se a fila de prioridade está vazia, 0 caso contrário
 int vazia(pFp fprio){
     if(fprio->n == 0){
         return 1;
@@ -545,12 +680,19 @@ int vazia(pFp fprio){
     return 0;
 }
 
+/// @brief Função para destruir uma fila de prioridade
+/// @param fprio Ponteiro para a fila de prioridade
 void destruirFprio(pFp fprio) {
     free(fprio->v);
     free(fprio->indice);
     free(fprio);
 }
 
+
+/// @brief Função para calcular a distância de um vértice a todos os outros utilizando Dijkstra
+/// @param g Ponteiro para o grafo
+/// @param s Inteiro que representa o vértice de origem
+/// @return int* Vetor de inteiros que representa as distâncias
 int* dijkstra(pGrafo g, int s){
     int v, *pai = (int*) malloc(g->n * sizeof(int)), *distancia = (int*) malloc(g->n * sizeof(int));
     pNo t;
@@ -581,8 +723,11 @@ int* dijkstra(pGrafo g, int s){
     destruirFprio(h);
     return distancia;
 }
-//End Dijkstra
-//Arvore Geradora Minima
+
+/// @brief Função para calcular a árvore geradora mínima utilizando Prim 
+/// @param g Ponteiro para o grafo
+/// @param s Inteiro que representa o vértice de origem
+/// @return int* Vetor de inteiros que representa os pais dos vértices
 int* prim(pGrafo g, int s){
     int v, *pai = (int*) malloc(g->n * sizeof(int)), *chaves = (int*) malloc(g->n * sizeof(int));
     pNo t;
@@ -610,4 +755,3 @@ int* prim(pGrafo g, int s){
     free(chaves);
     return pai;
 }
-//End Arvore Geradora Minima
